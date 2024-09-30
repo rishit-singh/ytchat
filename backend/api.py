@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Body
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from ytchat import YTChat
 from dotenv import load_dotenv
@@ -9,6 +10,16 @@ import uuid
 load_dotenv()
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 chats = {}
 
 class PromptInput(BaseModel):
@@ -20,7 +31,8 @@ async def prompt(prompt_input: PromptInput):
     if prompt_input.chat_id not in chats:
         if prompt_input.chat_id is None:
             prompt_input.chat_id = str(uuid.uuid4())
-        chats[prompt_input.chat_id] = YTChat(os.getenv("GROQ_API_KEY"), os.getenv("YT_KEY"))
+
+        chats[prompt_input.chat_id] = YTChat(os.getenv("GROQ_KEY"), os.getenv("YT_KEY"))
         chats[prompt_input.chat_id].Setup()
 
     yt_chat = chats[prompt_input.chat_id]
