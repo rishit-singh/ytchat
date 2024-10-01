@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { Textarea } from './components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import YTEmbed from './components/YTEmbed';
+import { useWebSpeechAPI } from './hooks/useWebSpeechAPI';
 
 interface Message {
     Role: string;
@@ -54,7 +55,11 @@ function Chat() {
             Content: <div className="flex flex-col gap-5">
                 <div>Loading...</div>
             </div>
-        });
+        }); 
+
+        if (promptInput.current) {
+            promptInput.current.value = "";
+        }
 
         console.log(body);
         try {
@@ -104,10 +109,18 @@ function Chat() {
     }
 
     const promptInput = useRef<HTMLTextAreaElement>(null);
-
+    
     useEffect(() => {
         setMessages(messagesRef.current);
     }, []);
+
+    const { listening, start: StartSpeech, stop: StopSpeech } = useWebSpeechAPI({
+        onResult: (result: string) => {
+            if (promptInput.current) {
+                promptInput.current.value += result;
+            }
+        }
+    });
 
     return <>
         <div className="flex flex-col gap-5">
@@ -126,6 +139,15 @@ function Chat() {
                     Prompt(promptInput.current?.value ?? "");
                     setPromptState("loading");
                 }}> {promptState == "loading" ? "Loading..." : "Send"}</Button>
+
+                <Button onClick={() => {
+                    if (listening) {
+                        StopSpeech();
+                    }
+                    else {
+                        StartSpeech();
+                    }
+                }}> {listening ? "Stop" : "Start"}</Button>
             </div>
         </div>
     </>;

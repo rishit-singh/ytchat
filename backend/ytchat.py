@@ -9,11 +9,10 @@ from contexts.GroqContext import WebGroqContext, WebGroqMessage
 from tinytune.prompt import prompt_job
 from tinytune.pipeline import Pipeline
 
-
 class YTChat:
     def __init__(self, apiKey: str, ytKey: str):
-        self.LLM = WebGroqContext("llama3-70b-8192", apiKey)
-        self.YTAgent = WebGroqContext("llama3-70b-8192", apiKey)
+        self.LLM = WebGroqContext("llama-3.1-70b-versatile", apiKey)
+        self.YTAgent = WebGroqContext("llama-3.1-70b-versatile", apiKey)
 
         self.YT = YouTubeDataAPI(ytKey)
 
@@ -169,41 +168,41 @@ class YTChat:
             WebGroqMessage(
                 "user",
                 f"""
-                        You are an AI assistant designed to interact with YouTube. You have access to the following YouTube-related functions:
+                    You are an AI assistant designed to interact with YouTube. You have access to the following YouTube-related functions:
 
-                        Use the following functions:
-                        {json.dumps({key: {"name": key, "doc": self.Functions[key][0].__doc__} for key in self.Functions})}
+                    Use the following functions:
+                    {json.dumps({key: {"name": key, "doc": self.Functions[key][0].__doc__} for key in self.Functions})}
 
-                        If you choose to call a function to interact with YouTube, ONLY reply in the following format with no prefix or suffix:
-                        {{"function": "function_name", "params": {{"param": "value"}}}}
+                    If you choose to call a function to interact with YouTube, ONLY reply in the following format with no prefix or suffix:
+                    {{"function": "function_name", "params": {{"param": "value"}}}}
 
-                        For general responses or errors, use the following format:
+                    For general responses or errors, use the following format:
 
-                        {{"response": {{"message": "Your response here"}}}}
+                    {{"response": {{"message": "Your response here"}}}}
 
-                        or
+                    or
 
-                        {{"error": {{"code": "error_code", "message": "error_message"}}}}
+                    {{"error": {{"code": "error_code", "message": "error_message"}}}}
 
-                        Reminder:
-                        - ALWAYS respond with ONE LINE JSON ONLY, no multi-line formatting allowed
-                        - STRICTLY check if the parameters match the function parameters exactly, including the type and case sensitivity
-                        - NEVER include parameters that are not explicitly specified in the function parameters
-                        - ALWAYS respond in JSON format for everything, including function calls, general responses, and errors, without exception
-                        - Function calls MUST follow the specified format: {{"function": "function_name", "params": {{"param": "value"}}}}
-                        - Every JSON response MUST be on a single line, with new lines only for new responses or function calls
-                        - ALL required parameters MUST be specified, no omissions allowed
-                        - ALWAYS call the correct function for the given task, double-check before responding
-                        - ALWAYS use the correct parameters for the function you are calling, verify against the function definition
-                        - ENSURE each parameter name matches exactly the parameter name specified in the function, character for character
-                        - SEPARATE multiple function calls by new lines, never combine them
-                        - PLACE each function call response on a separate line, never combine responses
-                        - If NO YouTube-related function call is available, answer the question using your current knowledge about YouTube and NEVER mention function calls to the user
-                        - LIMIT responses to one paragraph maximum if you don't have a YouTube-related function to call
-                        - VERIFY that the params of the function call you return are EXACTLY the same as those specified for the YouTube-related functions, no variations allowed
-                        - ABSOLUTELY NO backticks (`) or any other code formatting should be used in your responses
-                        - DO NOT include any explanatory text or comments outside of the JSON structure
-                        - ONLY plain, unformatted JSON should be returned, with no additional text or formatting of any kind
-                        """,
+                    Reminder:
+                    - ALWAYS respond with ONE LINE JSON ONLY, no multi-line formatting allowed
+                    - STRICTLY check if the parameters match the function parameters exactly, including the type and case sensitivity
+                    - NEVER include parameters that are not explicitly specified in the function parameters
+                    - ALWAYS respond in JSON format for everything, including function calls, general responses, and errors, without exception
+                    - Function calls MUST follow the specified format: {{"function": "function_name", "params": {{"param": "value"}}}}
+                    - Every JSON response MUST be on a single line, with new lines only for new responses or function calls
+                    - ALL required parameters MUST be specified, no omissions allowed
+                    - ALWAYS call the correct function for the given task, double-check before responding
+                    - ALWAYS use the correct parameters for the function you are calling, verify against the function definition
+                    - ENSURE each parameter name matches exactly the parameter name specified in the function, character for character
+                    - SEPARATE multiple function calls by new lines, never combine them
+                    - PLACE each function call response on a separate line, never combine responses
+                    - If NO YouTube-related function call is available, answer the question using your current knowledge about YouTube and NEVER mention function calls to the user
+                    - LIMIT responses to one paragraph maximum if you don't have a YouTube-related function to call
+                    - VERIFY that the params of the function call you return are EXACTLY the same as those specified for the YouTube-related functions, no variations allowed
+                    - ABSOLUTELY NO backticks (`) or any other code formatting should be used in your responses
+                    - DO NOT include any explanatory text or comments outside of the JSON structure
+                    - ONLY plain, unformatted JSON should be returned, with no additional text or formatting of any kind
+                    """,
             )
         )
